@@ -12,23 +12,10 @@ class PrioritiesTableSeeder extends Seeder
     public function run()
     {
         DB::table('priorities')->insert([
-            'id' => "1",
-            'name' => "Urgent"
-        ]);
-
-        DB::table('priorities')->insert([
-            'id' => "2",
-            'name' => "Important"
-        ]);
-
-        DB::table('priorities')->insert([
-            'id' => "3",
-            'name' => "Ignored"
-        ]);
-
-        DB::table('priorities')->insert([
-            'id' => "4",
-            'name' => "Optional"
+            ['name' => 'urgent', 'weight'=>1],
+            ['name' => 'important', 'weight'=>2],
+            ['name' => 'ignored', 'weight'=>3],
+            ['name' => 'optional', 'weight'=>4]
         ]);
     }
 }

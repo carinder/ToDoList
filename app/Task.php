@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Task extends Model
 {
     public function priorities(){
-        return $this->belongsToMany('priority','task_priorities','task_id','priority_id');
+        return $this->belongsToMany(Priority::class,'tasks_priorities');
     }
 }
