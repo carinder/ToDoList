@@ -36,7 +36,24 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $task = new Task;
+        $task->name = request('name');
+        $task->created_at = NOW();
+        $task->updated_at = NOW();
+        $task->save();
+
+        if(request('urgent')==1){
+            $task->priorities()->attach(1);
+        }
+        if(request('important')==1){
+            $task->priorities()->attach(2);
+        }
+        if(request('ignored')==1){
+            $task->priorities()->attach(3);
+        }
+        if(request('optional')==1){
+            $task->priorities()->attach(4);
+        }
     }
 
     /**

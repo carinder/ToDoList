@@ -14,3 +14,5 @@
 Route::get('/', function () {
     return view('tasks/index');
 });
+
+Route::resource('/task','TaskController');

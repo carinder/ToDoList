@@ -1,37 +1,39 @@
 <template>
   <div>
-    <b-table striped hover :items="items" :fields="fields" />
+    <b-table striped hover :items="tasks" :fields="fields" />
   </div>
 </template>
 
 <script>
   export default {
+    mounted(){
+        axios.get('/task').then(response => this.tasks = response.data)
+    },
     data() {
       return {
         // Note 'isActive' is left out and will not appear in the rendered table
+        tasks:[],
         fields: [
           {
-            key: 'last_name',
+              key:'completed_at',
+              sortable:true
+          },
+          {
+            key: 'name',
             sortable: true
           },
           {
-            key: 'first_name',
+            key: 'priorities',
             sortable: false
           },
           {
-            key: 'age',
-            label: 'Person age',
+            key: 'updated_at',
+            label: 'Last Updated',
             sortable: true,
             // Variant applies to the whole column, including the header and footer
             //variant: 'danger'
           }
         ],
-        items: [
-          { isActive: true, age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
-          { isActive: false, age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-          { isActive: false, age: 89, first_name: 'Geneva', last_name: 'Wilson' },
-          { isActive: true, age: 38, first_name: 'Jami', last_name: 'Carney' }
-        ]
       }
     }
   }
