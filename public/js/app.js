@@ -1833,6 +1833,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     var _this = this;
@@ -1844,24 +1855,53 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       // Note 'isActive' is left out and will not appear in the rendered table
-      tasks: [],
       fields: [{
-        key: 'completed_at',
-        sortable: true
-      }, {
         key: 'name',
         sortable: true
       }, {
+        key: 'completed_at',
+        label: 'Completed',
+        sortable: true
+      }, {
         key: 'priorities',
-        sortable: false
+        label: 'Priorities'
       }, {
         key: 'updated_at',
         label: 'Last Updated',
         sortable: true // Variant applies to the whole column, including the header and footer
         //variant: 'danger'
 
-      }]
+      }],
+      tasks: []
     };
+  },
+  methods: {
+    priorities: function priorities(item) {
+      return _.join(_.map(item.priorities, 'name'), ', ');
+    },
+    priorityClass: function priorityClass(priority) {
+      if (priority.name === 'urgent') {
+        return 'badge badge-pill badge-danger';
+      } else if (priority.name === 'important') {
+        return 'badge badge-pill badge-warning';
+      } else if (priority.name === 'ignored') {
+        return 'badge badge-pill badge-secondary';
+      } else if (priority.name === 'optional') {
+        return 'badge badge-pill badge-info';
+      }
+    },
+    completedAt: function completedAt(item) {
+      if (item == null) {
+        return "No";
+      } else {
+        return "Yes";
+      }
+    },
+    rowClass: function rowClass(item) {
+      if (item.completed_at != null) {
+        return 'table-success';
+      }
+    }
   }
 });
 
@@ -57320,7 +57360,49 @@ var render = function() {
     "div",
     [
       _c("b-table", {
-        attrs: { striped: "", hover: "", items: _vm.tasks, fields: _vm.fields }
+        attrs: {
+          striped: "",
+          hover: "",
+          items: _vm.tasks,
+          fields: _vm.fields,
+          "tbody-tr-class": _vm.rowClass
+        },
+        scopedSlots: _vm._u([
+          {
+            key: "completed_at",
+            fn: function(ref) {
+              var item = ref.item
+              return [
+                _c("span", [
+                  _vm._v(
+                    "\n              " +
+                      _vm._s(_vm.completedAt(item.completed_at)) +
+                      "\n          "
+                  )
+                ])
+              ]
+            }
+          },
+          {
+            key: "priorities",
+            fn: function(ref) {
+              var item = ref.item
+              return _vm._l(item.priorities, function(priority, index) {
+                return _c(
+                  "span",
+                  { key: index, class: _vm.priorityClass(priority) },
+                  [
+                    _vm._v(
+                      "\n              " +
+                        _vm._s(priority.name) +
+                        "\n          "
+                    )
+                  ]
+                )
+              })
+            }
+          }
+        ])
       })
     ],
     1
