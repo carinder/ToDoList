@@ -1,8 +1,23 @@
 <template>
   <div>
+    <!-- edit -->
+    <button @click="edit()" v-if="!editMode" class="btn btn-primary">
+        Edit
+    </button>
+    <button @click="update()" v-else class="btn btn-warning">
+        Save
+    </button>
+
+    <!-- Table -->
     <b-table striped hover :items="tasks" :fields="fields" :tbody-tr-class="rowClass">
+        <template slot="name" slot-scope="{ item }">
+            <a @click="deleteTask(item.id)" v-if="!editMode" class="nameTag">
+                {{item.name}}
+            </a>
+            <input type="text" v-else v-model="item.name">
+        </template>
         <template slot="completed_at" slot-scope="{ item }">
-            <span >
+            <span>
                 {{completedAt(item.completed_at)}}
             </span>
         </template>
@@ -22,7 +37,6 @@
     },
     data() {
       return {
-        // Note 'isActive' is left out and will not appear in the rendered table
         fields: [
             {
                 key: 'name',
@@ -35,17 +49,17 @@
             },
             {
                 key:'priorities',
-                label:'Priorities'
+                label:'Priorities',
+                sortable:true
             },
             {
                 key: 'updated_at',
                 label: 'Last Updated',
                 sortable: true,
-                // Variant applies to the whole column, including the header and footer
-                //variant: 'danger'
             }
         ],
         tasks:[],
+        editMode:false,
       }
     },
     methods: {
@@ -74,7 +88,20 @@
             if (item.completed_at != null){
                 return 'table-success'
             }
-        }
+        },
+
+        edit(){
+            this.editMode=true;
+        },
+
+        update(){
+            this.editMode=false;
+            axios.put('/task', {_method: 'PUT', tasks: this.tasks});
+        },
+
+        deleteTask(id){
+            axios.delete('/task/' + id).then(console.log('deleted'));
+        },
 
     }
   }

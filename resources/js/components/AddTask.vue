@@ -36,9 +36,6 @@
 
 <script>
     export default{
-        mounted(){
-            console.log("Add button mounted");
-        },
         methods:{
             save(){
                 axios.post('/task',{

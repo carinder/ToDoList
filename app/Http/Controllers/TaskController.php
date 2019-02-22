@@ -87,7 +87,19 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
-        //
+        if ($request->has('tasks')) {
+            foreach ($request->tasks as $task) {
+                Task::updateOrCreate([
+                    'id' => $task['id']
+                ],[
+                    'name' => $task['name']
+                ],[
+                    'updated_at' => NOW()
+                ],[
+                    'completed_at' => NOW()
+                ]);
+            }
+        }
     }
 
     /**
@@ -96,8 +108,9 @@ class TaskController extends Controller
      * @param  \App\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Task $task)
+    public function destroy($id)
     {
-        //
+        $task = Task::find($id);
+        $task->delete();
     }
 }

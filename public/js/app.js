@@ -1800,9 +1800,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  mounted: function mounted() {
-    console.log("Add button mounted");
-  },
   methods: {
     save: function save() {
       axios.post('/task', {
@@ -1844,6 +1841,21 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     var _this = this;
@@ -1854,7 +1866,6 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      // Note 'isActive' is left out and will not appear in the rendered table
       fields: [{
         key: 'name',
         sortable: true
@@ -1864,15 +1875,15 @@ __webpack_require__.r(__webpack_exports__);
         sortable: true
       }, {
         key: 'priorities',
-        label: 'Priorities'
+        label: 'Priorities',
+        sortable: true
       }, {
         key: 'updated_at',
         label: 'Last Updated',
-        sortable: true // Variant applies to the whole column, including the header and footer
-        //variant: 'danger'
-
+        sortable: true
       }],
-      tasks: []
+      tasks: [],
+      editMode: false
     };
   },
   methods: {
@@ -1901,6 +1912,19 @@ __webpack_require__.r(__webpack_exports__);
       if (item.completed_at != null) {
         return 'table-success';
       }
+    },
+    edit: function edit() {
+      this.editMode = true;
+    },
+    update: function update() {
+      this.editMode = false;
+      axios.put('/task', {
+        _method: 'PUT',
+        tasks: this.tasks
+      });
+    },
+    deleteTask: function deleteTask(id) {
+      axios.delete('/task/' + id).then(console.log('deleted'));
     }
   }
 });
@@ -57359,6 +57383,32 @@ var render = function() {
   return _c(
     "div",
     [
+      !_vm.editMode
+        ? _c(
+            "button",
+            {
+              staticClass: "btn btn-primary",
+              on: {
+                click: function($event) {
+                  return _vm.edit()
+                }
+              }
+            },
+            [_vm._v("\n      Edit\n  ")]
+          )
+        : _c(
+            "button",
+            {
+              staticClass: "btn btn-warning",
+              on: {
+                click: function($event) {
+                  return _vm.update()
+                }
+              }
+            },
+            [_vm._v("\n      Save\n  ")]
+          ),
+      _vm._v(" "),
       _c("b-table", {
         attrs: {
           striped: "",
@@ -57368,6 +57418,53 @@ var render = function() {
           "tbody-tr-class": _vm.rowClass
         },
         scopedSlots: _vm._u([
+          {
+            key: "name",
+            fn: function(ref) {
+              var item = ref.item
+              return [
+                !_vm.editMode
+                  ? _c(
+                      "a",
+                      {
+                        staticClass: "nameTag",
+                        on: {
+                          click: function($event) {
+                            return _vm.deleteTask(item.id)
+                          }
+                        }
+                      },
+                      [
+                        _vm._v(
+                          "\n              " +
+                            _vm._s(item.name) +
+                            "\n          "
+                        )
+                      ]
+                    )
+                  : _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: item.name,
+                          expression: "item.name"
+                        }
+                      ],
+                      attrs: { type: "text" },
+                      domProps: { value: item.name },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(item, "name", $event.target.value)
+                        }
+                      }
+                    })
+              ]
+            }
+          },
           {
             key: "completed_at",
             fn: function(ref) {
