@@ -46,7 +46,7 @@ class TaskController extends Controller
             $task->priorities()->attach(1);
         }
         if(request('important')==1){
-            $task->priorities()->attach(2);
+            $task->priorities()->attach(2); 
         }
         if(request('ignored')==1){
             $task->priorities()->attach(3);
@@ -96,10 +96,15 @@ class TaskController extends Controller
                 ],[
                     'updated_at' => NOW()
                 ],[
-                    'completed_at' => NOW()
+                    'created_at' => NOW()
                 ]);
             }
         }
+    }
+
+    public function updateCompletion(Request $request, Task $task)
+    {
+        dd('test');
     }
 
     /**

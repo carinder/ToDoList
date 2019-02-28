@@ -18,3 +18,5 @@ Route::get('/', function () {
 Route::resource('/task','TaskController');
 
 Route::put('/task', 'TaskController@update');
+
+Route::put('/task', 'TaskController@updateCompletion');
