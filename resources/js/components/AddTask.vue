@@ -14,15 +14,21 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <input type="text" name="taskName" placeholder="New Task Name">
-                    <p>Urgent:</p>
-                        <input type="checkbox" class="urgCheck"> 
-                    <p>Important:</p>
-                        <input type="checkbox" class="impCheck">
-                    <p>Ignored:</p>
-                        <input type="checkbox" class="ignCheck"> 
-                    <p>Optional:</p>
-                        <input type="checkbox" class="optCheck"> 
+                    <input type="text" v-model="task.name">
+                    <br>
+                    <input type="checkbox" id="urgCheck" value="1" v-model="task.priorities"> 
+                    <label for="urgCheck">Urgent</label>
+                    <br>
+                    <input type="checkbox" id="impCheck" value="2" v-model="task.priorities">
+                    <label for="impCheck">Important</label>
+                    <br>
+                    <input type="checkbox" id="ignCheck" value="3" v-model="task.priorities"> 
+                    <label for="ignCheck">Ignored</label>
+                    <br>
+                    <input type="checkbox" id="optCheck" value="4" v-model="task.priorities"> 
+                    <label for="optCheck">Optional</label>
+
+                    <span>{{task.priorities}}</span>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -36,15 +42,22 @@
 
 <script>
     export default{
+        data(){
+            return {
+                task:{
+                    name:'New Task',
+                    priorities:[]
+                },
+                priorities:[]
+            }
+        },
         methods:{
             save(){
                 axios.post('/task',{
-                    name:document.querySelector('[name="taskName"]').value,
-                    urgent:$('.urgCheck').is(":checked"),
-                    important:$('.impCheck').is(":checked"),
-                    ignored:$('.ignCheck').is(":checked"),
-                    optional:$('.optCheck').is(":checked"),
-                }).then(console.log('saved'));
+                    name:this.task.name,
+                    priorities:this.task.priorities,
+                });
+                $('#addModal').modal('toggle');
             }
         },
     }

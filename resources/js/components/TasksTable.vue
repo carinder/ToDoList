@@ -11,46 +11,62 @@
     <!-- Table -->
         <b-table striped hover :items="tasks" :fields="fields" :tbody-tr-class="rowClass">
             <template slot="name" slot-scope="{ item }">
-                <a v-if="!editMode" @click="infoModal(item.id)">
-                    {{item.name}}
-                </a>
-                <input type="text" v-else v-model="item.name">
+                <span v-if="!editMode">
+                    {{ item.name }}
+                </span>
+                <div v-else>
+                    <input type="text" v-model="item.name">
+                    <button type="button" class="btn btn-danger" @click="deleteTask(item.id)">Delete</button>
+                </div>
             </template>
             <template slot="completed_at" slot-scope="{ item }">
                 <span>
-                    {{completedAt(item.completed_at)}}
+                    {{ completedAt(item.completed_at) }}
                 </span>
             </template>
             <template slot="priorities" slot-scope="{ item }">
                 <span v-for="(priority, index) in item.priorities" :key="index" :class="priorityClass(priority)">
                     {{ priority.name }}
                 </span>
+                <span @click="infoModal(item.id)" class="badge badge-pill badge-success">
+                    <img src="https://img.icons8.com/ios-glyphs/26/000000/pencil.png" style="width: 50%; height: 50%">
+                </span>
             </template>
         </b-table>
-        <!--<div v-if="infoMode">
-            {{this.modalTitle}}
-        </div> --> 
-        <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="">
+
+
+        <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="infoModalLabel">{{this.modalTitle}}</h5>
+                    <h5>{{this.modalTitle}}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div v-for="name in modalPriorities">
-                        <li>{{name}}</li>
-                    </div>
-                    <p>Completed:</p>
-                    <input type="checkbox" id="checkbox" v-model="modalChecked">
+                    <input type="checkbox" id="checkbox" v-model="completeChecked">
                     <label for="checkbox">
-                        {{modalChecker()}}
+                        {{ completedChecker() }}
                     </label>  
+
+                    <br>
+
+                    <input type="checkbox" v-model="taskPriorities" value="1">
+                    <label>Urgent</label>
+                    <br>
+                    <input type="checkbox" v-model="taskPriorities" value="2">
+                    <label>Important</label>
+                    <br>
+                    <input type="checkbox" v-model="taskPriorities" value="3">
+                    <label>Ignored</label>
+                    <br>
+                    <input type="checkbox" v-model="taskPriorities" value="4">
+                    <label>Optional</label>
+                    
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-primary" @click="updateInfo">Save changes</button>
                 </div>
                 </div>
@@ -62,7 +78,7 @@
 <script>
   export default {
     mounted(){
-        axios.get('/task').then(response => this.tasks = response.data)
+        axios.get('/task').then(response => this.tasks = response.data);
     },
     data() {
       return {
@@ -90,10 +106,17 @@
         tasks:[],
         editMode:false,
 
+        modalid:0,
         modalTitle:"Unknown Name",
         modalPriorities:"yeet",
         modalDate:"NOW",
-        modalChecked:true,
+
+        completeChecked:false,
+
+        taskPriorities:[],
+
+        index:0,
+
       }
     },
     methods: {
@@ -126,29 +149,55 @@
 
         edit(){
             this.editMode=true;
+            console.log(this.tasks);
         },
 
         update(){
             this.editMode=false;
-            axios.put('/task', {_method: 'PUT', tasks: this.tasks});
+            axios.put('/task', { _method: 'PUT', tasks: this.tasks });
         },
 
         deleteTask(id){
-            axios.delete('/task/' + id).then(console.log('deleted'));
+            axios.delete('/task/' + id).then( 
+                this.index = this.tasks.map(function(x) {return x.id; }).indexOf(this.id),
+                this.tasks.splice(this.index,1)
+            );
         },
-
         infoModal(id){
-            let currentTask=this.modalTitle=this.tasks.find(x => x.id === id);
+            this.modalid=id;
+            let currentTask=this.tasks.find(x => x.id === id );
             this.modalTitle = currentTask.name;
-            this.modalPriorities = currentTask.priorities.map(priority => priority.name);
+            this.modalPriorities = currentTask.priorities.map( priority => priority.name);
             this.modalDate = currentTask.completed_at;
 
+            this.taskPriorities=[];
+
+
+            if(this.modalPriorities.includes('urgent')){
+                this.taskPriorities.push("1"); 
+            }
+            if(this.modalPriorities.includes('important')){
+                this.taskPriorities.push("2"); 
+            }
+            if(this.modalPriorities.includes('ignored')){
+                this.taskPriorities.push("3"); 
+            }
+            if(this.modalPriorities.includes('optional')){
+                this.taskPriorities.push("4"); 
+            }
+
+
+            if(this.modalDate != null){
+                this.completeChecked = true;
+            } else {
+                this.completeChecked = false;
+            }
 
             $('#infoModal').modal('toggle');
         },
 
-        modalChecker(){
-            if(this.modalChecked===true){
+        completedChecker(){
+            if(this.completeChecked===true){
                 return "Completed";
             } else {
                 return "Not Completed Yet";
@@ -156,7 +205,13 @@
         },
 
         updateInfo(){
-            axios.put('/task', {_method : 'PUT', complete: this.modalChecked});
+            axios.put('/taskpriorities', {
+                _method : 'PUT', 
+                id: this.modalid, 
+                complete: this.completeChecked,
+                priorities: this.taskPriorities,
+            }).then();
+            $('#infoModal').modal('toggle')
         }
 
     }

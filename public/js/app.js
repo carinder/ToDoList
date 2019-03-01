@@ -1799,16 +1799,29 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      task: {
+        name: 'New Task',
+        priorities: []
+      },
+      priorities: []
+    };
+  },
   methods: {
     save: function save() {
       axios.post('/task', {
-        name: document.querySelector('[name="taskName"]').value,
-        urgent: $('.urgCheck').is(":checked"),
-        important: $('.impCheck').is(":checked"),
-        ignored: $('.ignCheck').is(":checked"),
-        optional: $('.optCheck').is(":checked")
-      }).then(console.log('saved'));
+        name: this.task.name,
+        priorities: this.task.priorities
+      });
+      $('#addModal').modal('toggle');
     }
   }
 });
@@ -1901,6 +1914,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     var _this = this;
@@ -1929,10 +1958,13 @@ __webpack_require__.r(__webpack_exports__);
       }],
       tasks: [],
       editMode: false,
+      modalid: 0,
       modalTitle: "Unknown Name",
       modalPriorities: "yeet",
       modalDate: "NOW",
-      modalChecked: true
+      completeChecked: false,
+      taskPriorities: [],
+      index: 0
     };
   },
   methods: {
@@ -1964,6 +1996,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     edit: function edit() {
       this.editMode = true;
+      console.log(this.tasks);
     },
     update: function update() {
       this.editMode = false;
@@ -1973,10 +2006,13 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     deleteTask: function deleteTask(id) {
-      axios.delete('/task/' + id).then(console.log('deleted'));
+      axios.delete('/task/' + id).then(this.index = this.tasks.map(function (x) {
+        return x.id;
+      }).indexOf(this.id), this.tasks.splice(this.index, 1));
     },
     infoModal: function infoModal(id) {
-      var currentTask = this.modalTitle = this.tasks.find(function (x) {
+      this.modalid = id;
+      var currentTask = this.tasks.find(function (x) {
         return x.id === id;
       });
       this.modalTitle = currentTask.name;
@@ -1984,20 +2020,47 @@ __webpack_require__.r(__webpack_exports__);
         return priority.name;
       });
       this.modalDate = currentTask.completed_at;
+      this.taskPriorities = [];
+
+      if (this.modalPriorities.includes('urgent')) {
+        this.taskPriorities.push("1");
+      }
+
+      if (this.modalPriorities.includes('important')) {
+        this.taskPriorities.push("2");
+      }
+
+      if (this.modalPriorities.includes('ignored')) {
+        this.taskPriorities.push("3");
+      }
+
+      if (this.modalPriorities.includes('optional')) {
+        this.taskPriorities.push("4");
+      }
+
+      if (this.modalDate != null) {
+        this.completeChecked = true;
+      } else {
+        this.completeChecked = false;
+      }
+
       $('#infoModal').modal('toggle');
     },
-    modalChecker: function modalChecker() {
-      if (this.modalChecked === true) {
+    completedChecker: function completedChecker() {
+      if (this.completeChecked === true) {
         return "Completed";
       } else {
         return "Not Completed Yet";
       }
     },
     updateInfo: function updateInfo() {
-      axios.put('/task', {
+      axios.put('/taskpriorities', {
         _method: 'PUT',
-        complete: this.modalChecked
-      });
+        id: this.modalid,
+        complete: this.completeChecked,
+        priorities: this.taskPriorities
+      }).then();
+      $('#infoModal').modal('toggle');
     }
   }
 });
@@ -57346,7 +57409,216 @@ var render = function() {
             _c("div", { staticClass: "modal-content" }, [
               _vm._m(0),
               _vm._v(" "),
-              _vm._m(1),
+              _c("div", { staticClass: "modal-body" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.task.name,
+                      expression: "task.name"
+                    }
+                  ],
+                  attrs: { type: "text" },
+                  domProps: { value: _vm.task.name },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(_vm.task, "name", $event.target.value)
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c("br"),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.task.priorities,
+                      expression: "task.priorities"
+                    }
+                  ],
+                  attrs: { type: "checkbox", id: "urgCheck", value: "1" },
+                  domProps: {
+                    checked: Array.isArray(_vm.task.priorities)
+                      ? _vm._i(_vm.task.priorities, "1") > -1
+                      : _vm.task.priorities
+                  },
+                  on: {
+                    change: function($event) {
+                      var $$a = _vm.task.priorities,
+                        $$el = $event.target,
+                        $$c = $$el.checked ? true : false
+                      if (Array.isArray($$a)) {
+                        var $$v = "1",
+                          $$i = _vm._i($$a, $$v)
+                        if ($$el.checked) {
+                          $$i < 0 &&
+                            _vm.$set(_vm.task, "priorities", $$a.concat([$$v]))
+                        } else {
+                          $$i > -1 &&
+                            _vm.$set(
+                              _vm.task,
+                              "priorities",
+                              $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                            )
+                        }
+                      } else {
+                        _vm.$set(_vm.task, "priorities", $$c)
+                      }
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c("label", { attrs: { for: "urgCheck" } }, [_vm._v("Urgent")]),
+                _vm._v(" "),
+                _c("br"),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.task.priorities,
+                      expression: "task.priorities"
+                    }
+                  ],
+                  attrs: { type: "checkbox", id: "impCheck", value: "2" },
+                  domProps: {
+                    checked: Array.isArray(_vm.task.priorities)
+                      ? _vm._i(_vm.task.priorities, "2") > -1
+                      : _vm.task.priorities
+                  },
+                  on: {
+                    change: function($event) {
+                      var $$a = _vm.task.priorities,
+                        $$el = $event.target,
+                        $$c = $$el.checked ? true : false
+                      if (Array.isArray($$a)) {
+                        var $$v = "2",
+                          $$i = _vm._i($$a, $$v)
+                        if ($$el.checked) {
+                          $$i < 0 &&
+                            _vm.$set(_vm.task, "priorities", $$a.concat([$$v]))
+                        } else {
+                          $$i > -1 &&
+                            _vm.$set(
+                              _vm.task,
+                              "priorities",
+                              $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                            )
+                        }
+                      } else {
+                        _vm.$set(_vm.task, "priorities", $$c)
+                      }
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c("label", { attrs: { for: "impCheck" } }, [
+                  _vm._v("Important")
+                ]),
+                _vm._v(" "),
+                _c("br"),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.task.priorities,
+                      expression: "task.priorities"
+                    }
+                  ],
+                  attrs: { type: "checkbox", id: "ignCheck", value: "3" },
+                  domProps: {
+                    checked: Array.isArray(_vm.task.priorities)
+                      ? _vm._i(_vm.task.priorities, "3") > -1
+                      : _vm.task.priorities
+                  },
+                  on: {
+                    change: function($event) {
+                      var $$a = _vm.task.priorities,
+                        $$el = $event.target,
+                        $$c = $$el.checked ? true : false
+                      if (Array.isArray($$a)) {
+                        var $$v = "3",
+                          $$i = _vm._i($$a, $$v)
+                        if ($$el.checked) {
+                          $$i < 0 &&
+                            _vm.$set(_vm.task, "priorities", $$a.concat([$$v]))
+                        } else {
+                          $$i > -1 &&
+                            _vm.$set(
+                              _vm.task,
+                              "priorities",
+                              $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                            )
+                        }
+                      } else {
+                        _vm.$set(_vm.task, "priorities", $$c)
+                      }
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c("label", { attrs: { for: "ignCheck" } }, [
+                  _vm._v("Ignored")
+                ]),
+                _vm._v(" "),
+                _c("br"),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.task.priorities,
+                      expression: "task.priorities"
+                    }
+                  ],
+                  attrs: { type: "checkbox", id: "optCheck", value: "4" },
+                  domProps: {
+                    checked: Array.isArray(_vm.task.priorities)
+                      ? _vm._i(_vm.task.priorities, "4") > -1
+                      : _vm.task.priorities
+                  },
+                  on: {
+                    change: function($event) {
+                      var $$a = _vm.task.priorities,
+                        $$el = $event.target,
+                        $$c = $$el.checked ? true : false
+                      if (Array.isArray($$a)) {
+                        var $$v = "4",
+                          $$i = _vm._i($$a, $$v)
+                        if ($$el.checked) {
+                          $$i < 0 &&
+                            _vm.$set(_vm.task, "priorities", $$a.concat([$$v]))
+                        } else {
+                          $$i > -1 &&
+                            _vm.$set(
+                              _vm.task,
+                              "priorities",
+                              $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                            )
+                        }
+                      } else {
+                        _vm.$set(_vm.task, "priorities", $$c)
+                      }
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c("label", { attrs: { for: "optCheck" } }, [
+                  _vm._v("Optional")
+                ]),
+                _vm._v(" "),
+                _c("span", [_vm._v(_vm._s(_vm.task.priorities))])
+              ]),
               _vm._v(" "),
               _c("div", { staticClass: "modal-footer" }, [
                 _c(
@@ -57401,32 +57673,6 @@ var staticRenderFns = [
         },
         [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
       )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-body" }, [
-      _c("input", {
-        attrs: { type: "text", name: "taskName", placeholder: "New Task Name" }
-      }),
-      _vm._v(" "),
-      _c("p", [_vm._v("Urgent:")]),
-      _vm._v(" "),
-      _c("input", { staticClass: "urgCheck", attrs: { type: "checkbox" } }),
-      _vm._v(" "),
-      _c("p", [_vm._v("Important:")]),
-      _vm._v(" "),
-      _c("input", { staticClass: "impCheck", attrs: { type: "checkbox" } }),
-      _vm._v(" "),
-      _c("p", [_vm._v("Ignored:")]),
-      _vm._v(" "),
-      _c("input", { staticClass: "ignCheck", attrs: { type: "checkbox" } }),
-      _vm._v(" "),
-      _c("p", [_vm._v("Optional:")]),
-      _vm._v(" "),
-      _c("input", { staticClass: "optCheck", attrs: { type: "checkbox" } })
     ])
   }
 ]
@@ -57519,43 +57765,49 @@ var render = function() {
               var item = ref.item
               return [
                 !_vm.editMode
-                  ? _c(
-                      "a",
-                      {
+                  ? _c("span", [
+                      _vm._v(
+                        "\n                " +
+                          _vm._s(item.name) +
+                          "\n            "
+                      )
+                    ])
+                  : _c("div", [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: item.name,
+                            expression: "item.name"
+                          }
+                        ],
+                        attrs: { type: "text" },
+                        domProps: { value: item.name },
                         on: {
-                          click: function($event) {
-                            return _vm.infoModal(item.id)
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(item, "name", $event.target.value)
                           }
                         }
-                      },
-                      [
-                        _vm._v(
-                          "\n                " +
-                            _vm._s(item.name) +
-                            "\n            "
-                        )
-                      ]
-                    )
-                  : _c("input", {
-                      directives: [
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "button",
                         {
-                          name: "model",
-                          rawName: "v-model",
-                          value: item.name,
-                          expression: "item.name"
-                        }
-                      ],
-                      attrs: { type: "text" },
-                      domProps: { value: item.name },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
+                          staticClass: "btn btn-danger",
+                          attrs: { type: "button" },
+                          on: {
+                            click: function($event) {
+                              return _vm.deleteTask(item.id)
+                            }
                           }
-                          _vm.$set(item, "name", $event.target.value)
-                        }
-                      }
-                    })
+                        },
+                        [_vm._v("Delete")]
+                      )
+                    ])
               ]
             }
           },
@@ -57578,19 +57830,42 @@ var render = function() {
             key: "priorities",
             fn: function(ref) {
               var item = ref.item
-              return _vm._l(item.priorities, function(priority, index) {
-                return _c(
+              return [
+                _vm._l(item.priorities, function(priority, index) {
+                  return _c(
+                    "span",
+                    { key: index, class: _vm.priorityClass(priority) },
+                    [
+                      _vm._v(
+                        "\n                " +
+                          _vm._s(priority.name) +
+                          "\n            "
+                      )
+                    ]
+                  )
+                }),
+                _vm._v(" "),
+                _c(
                   "span",
-                  { key: index, class: _vm.priorityClass(priority) },
+                  {
+                    staticClass: "badge badge-pill badge-success",
+                    on: {
+                      click: function($event) {
+                        return _vm.infoModal(item.id)
+                      }
+                    }
+                  },
                   [
-                    _vm._v(
-                      "\n                " +
-                        _vm._s(priority.name) +
-                        "\n            "
-                    )
+                    _c("img", {
+                      staticStyle: { width: "50%", height: "50%" },
+                      attrs: {
+                        src:
+                          "https://img.icons8.com/ios-glyphs/26/000000/pencil.png"
+                      }
+                    })
                   ]
                 )
-              })
+              ]
             }
           }
         ])
@@ -57605,7 +57880,7 @@ var render = function() {
             tabindex: "-1",
             role: "dialog",
             "aria-labelledby": "infoModalLabel",
-            "aria-hidden": ""
+            "aria-hidden": "true"
           }
         },
         [
@@ -57615,76 +57890,226 @@ var render = function() {
             [
               _c("div", { staticClass: "modal-content" }, [
                 _c("div", { staticClass: "modal-header" }, [
-                  _c(
-                    "h5",
-                    {
-                      staticClass: "modal-title",
-                      attrs: { id: "infoModalLabel" }
-                    },
-                    [_vm._v(_vm._s(this.modalTitle))]
-                  ),
+                  _c("h5", [_vm._v(_vm._s(this.modalTitle))]),
                   _vm._v(" "),
                   _vm._m(0)
                 ]),
                 _vm._v(" "),
-                _c(
-                  "div",
-                  { staticClass: "modal-body" },
-                  [
-                    _vm._l(_vm.modalPriorities, function(name) {
-                      return _c("div", [_c("li", [_vm._v(_vm._s(name))])])
-                    }),
-                    _vm._v(" "),
-                    _c("p", [_vm._v("Completed:")]),
-                    _vm._v(" "),
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.modalChecked,
-                          expression: "modalChecked"
-                        }
-                      ],
-                      attrs: { type: "checkbox", id: "checkbox" },
-                      domProps: {
-                        checked: Array.isArray(_vm.modalChecked)
-                          ? _vm._i(_vm.modalChecked, null) > -1
-                          : _vm.modalChecked
-                      },
-                      on: {
-                        change: function($event) {
-                          var $$a = _vm.modalChecked,
-                            $$el = $event.target,
-                            $$c = $$el.checked ? true : false
-                          if (Array.isArray($$a)) {
-                            var $$v = null,
-                              $$i = _vm._i($$a, $$v)
-                            if ($$el.checked) {
-                              $$i < 0 && (_vm.modalChecked = $$a.concat([$$v]))
-                            } else {
-                              $$i > -1 &&
-                                (_vm.modalChecked = $$a
-                                  .slice(0, $$i)
-                                  .concat($$a.slice($$i + 1)))
-                            }
+                _c("div", { staticClass: "modal-body" }, [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.completeChecked,
+                        expression: "completeChecked"
+                      }
+                    ],
+                    attrs: { type: "checkbox", id: "checkbox" },
+                    domProps: {
+                      checked: Array.isArray(_vm.completeChecked)
+                        ? _vm._i(_vm.completeChecked, null) > -1
+                        : _vm.completeChecked
+                    },
+                    on: {
+                      change: function($event) {
+                        var $$a = _vm.completeChecked,
+                          $$el = $event.target,
+                          $$c = $$el.checked ? true : false
+                        if (Array.isArray($$a)) {
+                          var $$v = null,
+                            $$i = _vm._i($$a, $$v)
+                          if ($$el.checked) {
+                            $$i < 0 && (_vm.completeChecked = $$a.concat([$$v]))
                           } else {
-                            _vm.modalChecked = $$c
+                            $$i > -1 &&
+                              (_vm.completeChecked = $$a
+                                .slice(0, $$i)
+                                .concat($$a.slice($$i + 1)))
                           }
+                        } else {
+                          _vm.completeChecked = $$c
                         }
                       }
-                    }),
-                    _vm._v(" "),
-                    _c("label", { attrs: { for: "checkbox" } }, [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(_vm.modalChecker()) +
-                          "\n                "
-                      )
-                    ])
-                  ],
-                  2
-                ),
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("label", { attrs: { for: "checkbox" } }, [
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(_vm.completedChecker()) +
+                        "\n                "
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("br"),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.taskPriorities,
+                        expression: "taskPriorities"
+                      }
+                    ],
+                    attrs: { type: "checkbox", value: "1" },
+                    domProps: {
+                      checked: Array.isArray(_vm.taskPriorities)
+                        ? _vm._i(_vm.taskPriorities, "1") > -1
+                        : _vm.taskPriorities
+                    },
+                    on: {
+                      change: function($event) {
+                        var $$a = _vm.taskPriorities,
+                          $$el = $event.target,
+                          $$c = $$el.checked ? true : false
+                        if (Array.isArray($$a)) {
+                          var $$v = "1",
+                            $$i = _vm._i($$a, $$v)
+                          if ($$el.checked) {
+                            $$i < 0 && (_vm.taskPriorities = $$a.concat([$$v]))
+                          } else {
+                            $$i > -1 &&
+                              (_vm.taskPriorities = $$a
+                                .slice(0, $$i)
+                                .concat($$a.slice($$i + 1)))
+                          }
+                        } else {
+                          _vm.taskPriorities = $$c
+                        }
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("label", [_vm._v("Urgent")]),
+                  _vm._v(" "),
+                  _c("br"),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.taskPriorities,
+                        expression: "taskPriorities"
+                      }
+                    ],
+                    attrs: { type: "checkbox", value: "2" },
+                    domProps: {
+                      checked: Array.isArray(_vm.taskPriorities)
+                        ? _vm._i(_vm.taskPriorities, "2") > -1
+                        : _vm.taskPriorities
+                    },
+                    on: {
+                      change: function($event) {
+                        var $$a = _vm.taskPriorities,
+                          $$el = $event.target,
+                          $$c = $$el.checked ? true : false
+                        if (Array.isArray($$a)) {
+                          var $$v = "2",
+                            $$i = _vm._i($$a, $$v)
+                          if ($$el.checked) {
+                            $$i < 0 && (_vm.taskPriorities = $$a.concat([$$v]))
+                          } else {
+                            $$i > -1 &&
+                              (_vm.taskPriorities = $$a
+                                .slice(0, $$i)
+                                .concat($$a.slice($$i + 1)))
+                          }
+                        } else {
+                          _vm.taskPriorities = $$c
+                        }
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("label", [_vm._v("Important")]),
+                  _vm._v(" "),
+                  _c("br"),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.taskPriorities,
+                        expression: "taskPriorities"
+                      }
+                    ],
+                    attrs: { type: "checkbox", value: "3" },
+                    domProps: {
+                      checked: Array.isArray(_vm.taskPriorities)
+                        ? _vm._i(_vm.taskPriorities, "3") > -1
+                        : _vm.taskPriorities
+                    },
+                    on: {
+                      change: function($event) {
+                        var $$a = _vm.taskPriorities,
+                          $$el = $event.target,
+                          $$c = $$el.checked ? true : false
+                        if (Array.isArray($$a)) {
+                          var $$v = "3",
+                            $$i = _vm._i($$a, $$v)
+                          if ($$el.checked) {
+                            $$i < 0 && (_vm.taskPriorities = $$a.concat([$$v]))
+                          } else {
+                            $$i > -1 &&
+                              (_vm.taskPriorities = $$a
+                                .slice(0, $$i)
+                                .concat($$a.slice($$i + 1)))
+                          }
+                        } else {
+                          _vm.taskPriorities = $$c
+                        }
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("label", [_vm._v("Ignored")]),
+                  _vm._v(" "),
+                  _c("br"),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.taskPriorities,
+                        expression: "taskPriorities"
+                      }
+                    ],
+                    attrs: { type: "checkbox", value: "4" },
+                    domProps: {
+                      checked: Array.isArray(_vm.taskPriorities)
+                        ? _vm._i(_vm.taskPriorities, "4") > -1
+                        : _vm.taskPriorities
+                    },
+                    on: {
+                      change: function($event) {
+                        var $$a = _vm.taskPriorities,
+                          $$el = $event.target,
+                          $$c = $$el.checked ? true : false
+                        if (Array.isArray($$a)) {
+                          var $$v = "4",
+                            $$i = _vm._i($$a, $$v)
+                          if ($$el.checked) {
+                            $$i < 0 && (_vm.taskPriorities = $$a.concat([$$v]))
+                          } else {
+                            $$i > -1 &&
+                              (_vm.taskPriorities = $$a
+                                .slice(0, $$i)
+                                .concat($$a.slice($$i + 1)))
+                          }
+                        } else {
+                          _vm.taskPriorities = $$c
+                        }
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("label", [_vm._v("Optional")])
+                ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "modal-footer" }, [
                   _c(
@@ -57693,7 +58118,7 @@ var render = function() {
                       staticClass: "btn btn-secondary",
                       attrs: { type: "button", "data-dismiss": "modal" }
                     },
-                    [_vm._v("Close")]
+                    [_vm._v("Cancel")]
                   ),
                   _vm._v(" "),
                   _c(

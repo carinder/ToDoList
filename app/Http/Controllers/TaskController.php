@@ -38,22 +38,11 @@ class TaskController extends Controller
     {
         $task = new Task;
         $task->name = request('name');
-        $task->created_at = NOW();
-        $task->updated_at = NOW();
+        $task->created_at = now();
+        $task->updated_at = now();
         $task->save();
 
-        if(request('urgent')==1){
-            $task->priorities()->attach(1);
-        }
-        if(request('important')==1){
-            $task->priorities()->attach(2); 
-        }
-        if(request('ignored')==1){
-            $task->priorities()->attach(3);
-        }
-        if(request('optional')==1){
-            $task->priorities()->attach(4);
-        }
+        $task->priorities()->sync(request('priorities'));
     }
 
     /**
@@ -94,17 +83,25 @@ class TaskController extends Controller
                 ],[
                     'name' => $task['name']
                 ],[
-                    'updated_at' => NOW()
+                    'updated_at' => now()
                 ],[
-                    'created_at' => NOW()
+                    'completed_at' => now()
                 ]);
             }
         }
     }
 
-    public function updateCompletion(Request $request, Task $task)
+    public function updatePriorities(Request $request)
     {
-        dd('test');
+        $task = Task::find(request('id'));
+        $task->priorities()->sync(request('priorities'));
+        if(request('complete')){
+            $task->completed_at = now();
+        } else {
+            $task->completed_at = null;
+        }
+        $task->updated_at = now();
+        $task->save();
     }
 
     /**
