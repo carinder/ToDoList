@@ -11,8 +11,7 @@
     <body>
         <div id='app'>
             <h1>To Do List:</h1>
-            <tasks-table></tasks-table>
-            <add-task></add-task>
+            <task-parent></task-parent>
         </div>
         <script src="js/app.js"></script>
     </body>

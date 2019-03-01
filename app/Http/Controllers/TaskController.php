@@ -43,6 +43,8 @@ class TaskController extends Controller
         $task->save();
 
         $task->priorities()->sync(request('priorities'));
+
+        return redirect('/');
     }
 
     /**

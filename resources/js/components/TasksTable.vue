@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div @addtask="get()">
     <!-- edit -->
         <button @click="edit()" v-if="!editMode" class="btn btn-primary">
             Edit
@@ -78,7 +78,7 @@
 <script>
   export default {
     mounted(){
-        axios.get('/task').then(response => this.tasks = response.data);
+        this.get()
     },
     data() {
       return {
@@ -120,6 +120,9 @@
       }
     },
     methods: {
+        get(){
+            axios.get('/task').then(response => this.tasks = response.data);
+        },
         priorities: function (item) {
             return _.join(_.map(item.priorities, 'name'), ', ')
         },
@@ -162,6 +165,7 @@
                 this.index = this.tasks.map(function(x) {return x.id; }).indexOf(this.id),
                 this.tasks.splice(this.index,1)
             );
+            this.editMode=false;
         },
         infoModal(id){
             this.modalid=id;
@@ -210,7 +214,7 @@
                 id: this.modalid, 
                 complete: this.completeChecked,
                 priorities: this.taskPriorities,
-            }).then();
+            }).then( axios.get('/task').then( this.get() ));
             $('#infoModal').modal('toggle')
         }
 

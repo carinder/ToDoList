@@ -27,8 +27,6 @@
                     <br>
                     <input type="checkbox" id="optCheck" value="4" v-model="task.priorities"> 
                     <label for="optCheck">Optional</label>
-
-                    <span>{{task.priorities}}</span>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -48,7 +46,6 @@
                     name:'New Task',
                     priorities:[]
                 },
-                priorities:[]
             }
         },
         methods:{
@@ -57,6 +54,7 @@
                     name:this.task.name,
                     priorities:this.task.priorities,
                 });
+                this.$emit('newtask','message'); // Doesn't emit or listeners doesnt react like it should
                 $('#addModal').modal('toggle');
             }
         },
