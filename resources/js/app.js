@@ -33,6 +33,8 @@ Vue.component('b-table', BTable)
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
+export const eventBus = new Vue();
+
 const app = new Vue({
     el: '#app'
 });

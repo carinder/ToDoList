@@ -1,5 +1,5 @@
 <template>
-    <div @addtask="get()">
+    <div v-on:addnewtask="console.log('yeah')">
     <!-- edit -->
         <button @click="edit()" v-if="!editMode" class="btn btn-primary">
             Edit
@@ -76,148 +76,150 @@
 </template>
 
 <script>
-  export default {
-    mounted(){
-        this.get()
-    },
-    data() {
-      return {
-        fields: [
-            {
-                key: 'name',
-                sortable: true
-            },
-            {
-                key:'completed_at',
-                label:'Completed',
-                sortable:true
-            },
-            {
-                key:'priorities',
-                label:'Priorities',
-                sortable:true
-            },
-            {
-                key: 'updated_at',
-                label: 'Last Updated',
-                sortable: true,
-            }
-        ],
-        tasks:[],
-        editMode:false,
-
-        modalid:0,
-        modalTitle:"Unknown Name",
-        modalPriorities:"yeet",
-        modalDate:"NOW",
-
-        completeChecked:false,
-
-        taskPriorities:[],
-
-        index:0,
-
-      }
-    },
-    methods: {
-        get(){
-            axios.get('/task').then(response => this.tasks = response.data);
+    import {eventBus} from "../app";
+    export default {
+        created() {
+            eventBus.$on('addtask', () => {
+                this.get();
+            });
         },
-        priorities: function (item) {
-            return _.join(_.map(item.priorities, 'name'), ', ')
+        mounted(){
+            this.get()
         },
-        priorityClass: function (priority) {
-            if (priority.name === 'urgent') {
-                return 'badge badge-pill badge-danger'
-            } else if (priority.name === 'important'){
-                return 'badge badge-pill badge-warning'
-            } else if (priority.name === 'ignored'){
-                return 'badge badge-pill badge-secondary'
-            } else if (priority.name === 'optional'){
-                return 'badge badge-pill badge-info'
-            }
-        },
-        completedAt(item){
-            if (item == null){
-                return "No"
-            } else {
-                return "Yes"
-            }
-        },
-        rowClass(item){
-            if (item.completed_at != null){
-                return 'table-success'
-            }
-        },
+        data() {
+        return {
+            fields: [
+                {
+                    key: 'name',
+                    sortable: true
+                },
+                {
+                    key:'completed_at',
+                    label:'Completed',
+                    sortable:true
+                },
+                {
+                    key:'priorities',
+                    label:'Priorities',
+                    sortable:true
+                },
+                {
+                    key: 'updated_at',
+                    label: 'Last Updated',
+                    sortable: true,
+                }
+            ],
+            tasks:[],
+            editMode:false,
+            modalid:0,
+            modalTitle:"Unknown Name",
+            modalPriorities:"yeet",
+            modalDate:"NOW",
+            completeChecked:false,
+            taskPriorities:[],
+            index:0,
 
-        edit(){
-            this.editMode=true;
-            console.log(this.tasks);
-        },
-
-        update(){
-            this.editMode=false;
-            axios.put('/task', { _method: 'PUT', tasks: this.tasks });
-        },
-
-        deleteTask(id){
-            axios.delete('/task/' + id).then( 
-                this.index = this.tasks.map(function(x) {return x.id; }).indexOf(this.id),
-                this.tasks.splice(this.index,1)
-            );
-            this.editMode=false;
-        },
-        infoModal(id){
-            this.modalid=id;
-            let currentTask=this.tasks.find(x => x.id === id );
-            this.modalTitle = currentTask.name;
-            this.modalPriorities = currentTask.priorities.map( priority => priority.name);
-            this.modalDate = currentTask.completed_at;
-
-            this.taskPriorities=[];
-
-
-            if(this.modalPriorities.includes('urgent')){
-                this.taskPriorities.push("1"); 
-            }
-            if(this.modalPriorities.includes('important')){
-                this.taskPriorities.push("2"); 
-            }
-            if(this.modalPriorities.includes('ignored')){
-                this.taskPriorities.push("3"); 
-            }
-            if(this.modalPriorities.includes('optional')){
-                this.taskPriorities.push("4"); 
-            }
-
-
-            if(this.modalDate != null){
-                this.completeChecked = true;
-            } else {
-                this.completeChecked = false;
-            }
-
-            $('#infoModal').modal('toggle');
-        },
-
-        completedChecker(){
-            if(this.completeChecked===true){
-                return "Completed";
-            } else {
-                return "Not Completed Yet";
-            }
-        },
-
-        updateInfo(){
-            axios.put('/taskpriorities', {
-                _method : 'PUT', 
-                id: this.modalid, 
-                complete: this.completeChecked,
-                priorities: this.taskPriorities,
-            }).then( axios.get('/task').then( this.get() ));
-            $('#infoModal').modal('toggle')
         }
+        },
+        methods: {
+            get(){
+                axios.get('/task').then(response => this.tasks = response.data);
+            },
+            priorities: function (item) {
+                return _.join(_.map(item.priorities, 'name'), ', ')
+            },
+            priorityClass: function (priority) {
+                if (priority.name === 'urgent') {
+                    return 'badge badge-pill badge-danger'
+                } else if (priority.name === 'important'){
+                    return 'badge badge-pill badge-warning'
+                } else if (priority.name === 'ignored'){
+                    return 'badge badge-pill badge-secondary'
+                } else if (priority.name === 'optional'){
+                    return 'badge badge-pill badge-info'
+                }
+            },
+            completedAt(item){
+                if (item == null){
+                    return "No"
+                } else {
+                    return "Yes"
+                }
+            },
+            rowClass(item){
+                if (item.completed_at != null){
+                    return 'table-success'
+                }
+            },
 
+            edit(){
+                this.editMode=true;
+
+                console.log(this.updateTasks);
+            },
+
+            update(){
+                this.editMode=false;
+                axios.put('/task', { _method: 'PUT', tasks: this.tasks });
+            },
+
+            deleteTask(id){
+                axios.delete('/task/' + id).then( 
+                    this.index = this.tasks.map(function(x) {return x.id; }).indexOf(this.id),
+                    this.tasks.splice(this.index,1)
+                );
+                this.editMode=false;
+            },
+            infoModal(id){
+                this.modalid=id;
+                let currentTask=this.tasks.find(x => x.id === id );
+                this.modalTitle = currentTask.name;
+                this.modalPriorities = currentTask.priorities.map( priority => priority.name);
+                this.modalDate = currentTask.completed_at;
+
+                this.taskPriorities=[];
+
+
+                if(this.modalPriorities.includes('urgent')){
+                    this.taskPriorities.push("1"); 
+                }
+                if(this.modalPriorities.includes('important')){
+                    this.taskPriorities.push("2"); 
+                }
+                if(this.modalPriorities.includes('ignored')){
+                    this.taskPriorities.push("3"); 
+                }
+                if(this.modalPriorities.includes('optional')){
+                    this.taskPriorities.push("4"); 
+                }
+
+
+                if(this.modalDate != null){
+                    this.completeChecked = true;
+                } else {
+                    this.completeChecked = false;
+                }
+
+                $('#infoModal').modal('toggle');
+            },
+
+            completedChecker(){
+                if(this.completeChecked===true){
+                    return "Completed";
+                } else {
+                    return "Not Completed Yet";
+                }
+            },
+
+            updateInfo(){
+                axios.put('/taskpriorities', {
+                    _method : 'PUT', 
+                    id: this.modalid, 
+                    complete: this.completeChecked,
+                    priorities: this.taskPriorities,
+                }).then( axios.get('/task').then( this.get() ));
+                $('#infoModal').modal('toggle')
+            }
+        },
     }
-  }
 </script>

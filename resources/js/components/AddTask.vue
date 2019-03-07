@@ -30,7 +30,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button @click="save()" type="button" class="btn btn-primary">Save changes</button>
+                    <button @click="save();" type="button" class="btn btn-primary">Save changes</button>
                 </div>
                 </div>
             </div>
@@ -39,6 +39,7 @@
 </template>
 
 <script>
+    import {eventBus} from "../app";
     export default{
         data(){
             return {
@@ -48,14 +49,14 @@
                 },
             }
         },
-        methods:{
+        methods: {
             save(){
                 axios.post('/task',{
                     name:this.task.name,
                     priorities:this.task.priorities,
                 });
-                this.$emit('newtask','message'); // Doesn't emit or listeners doesnt react like it should
                 $('#addModal').modal('toggle');
+                 eventBus.$emit('addtask');
             }
         },
     }
