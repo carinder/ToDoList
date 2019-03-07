@@ -15,7 +15,8 @@
                     {{ item.name }}
                 </span>
                 <div v-else>
-                    <input type="text" v-model="item.name">
+                    <input type="text" v-model.lazy="item.name" :key="item.id">
+                    <div>{{item.name}}</div>
                     <button type="button" class="btn btn-danger" @click="deleteTask(item.id)">Delete</button>
                 </div>
             </template>

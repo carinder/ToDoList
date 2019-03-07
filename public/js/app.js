@@ -1915,6 +1915,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   created: function created() {
@@ -57755,22 +57756,23 @@ var render = function() {
                         directives: [
                           {
                             name: "model",
-                            rawName: "v-model",
+                            rawName: "v-model.lazy",
                             value: item.name,
-                            expression: "item.name"
+                            expression: "item.name",
+                            modifiers: { lazy: true }
                           }
                         ],
+                        key: item.id,
                         attrs: { type: "text" },
                         domProps: { value: item.name },
                         on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.$set(item, "name", $event.target.value)
+                          change: function($event) {
+                            return _vm.$set(item, "name", $event.target.value)
                           }
                         }
                       }),
+                      _vm._v(" "),
+                      _c("div", [_vm._v(_vm._s(item.name))]),
                       _vm._v(" "),
                       _c(
                         "button",
