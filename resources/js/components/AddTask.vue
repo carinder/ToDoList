@@ -44,8 +44,8 @@
         data(){
             return {
                 task:{
-                    name:'New Task',
-                    priorities:[]
+                    name: 'New Task',
+                    priorities: []
                 },
             }
         },
@@ -56,7 +56,7 @@
                     priorities:this.task.priorities,
                 });
                 $('#addModal').modal('toggle');
-                 eventBus.$emit('addtask');
+                eventBus.$emit('addtask');
             }
         },
     }

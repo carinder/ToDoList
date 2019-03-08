@@ -1914,8 +1914,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   created: function created() {
@@ -1950,11 +1948,10 @@ __webpack_require__.r(__webpack_exports__);
       editMode: false,
       modalid: 0,
       modalTitle: "Unknown Name",
-      modalPriorities: "yeet",
-      modalDate: "NOW",
+      modalPriorities: "unknown",
+      modalDate: "now?",
       completeChecked: false,
-      taskPriorities: [],
-      index: 0
+      taskPriorities: []
     };
   },
   methods: {
@@ -57695,13 +57692,6 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    {
-      on: {
-        addnewtask: function($event) {
-          return _vm.console.log("yeah")
-        }
-      }
-    },
     [
       !_vm.editMode
         ? _c(
@@ -57771,8 +57761,6 @@ var render = function() {
                           }
                         }
                       }),
-                      _vm._v(" "),
-                      _c("div", [_vm._v(_vm._s(item.name))]),
                       _vm._v(" "),
                       _c(
                         "button",
@@ -57870,7 +57858,7 @@ var render = function() {
             [
               _c("div", { staticClass: "modal-content" }, [
                 _c("div", { staticClass: "modal-header" }, [
-                  _c("h5", [_vm._v(_vm._s(this.modalTitle))]),
+                  _c("h5", [_vm._v(" " + _vm._s(this.modalTitle) + " ")]),
                   _vm._v(" "),
                   _vm._m(0)
                 ]),

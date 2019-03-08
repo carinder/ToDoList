@@ -1,5 +1,5 @@
 <template>
-    <div v-on:addnewtask="console.log('yeah')">
+    <div>
     <!-- edit -->
         <button @click="edit()" v-if="!editMode" class="btn btn-primary">
             Edit
@@ -16,7 +16,6 @@
                 </span>
                 <div v-else>
                     <input type="text" v-model.lazy="item.name" :key="item.id">
-                    <div>{{item.name}}</div>
                     <button type="button" class="btn btn-danger" @click="deleteTask(item.id)">Delete</button>
                 </div>
             </template>
@@ -40,7 +39,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <h5>{{this.modalTitle}}</h5>
+                    <h5> {{ this.modalTitle }} </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                     </button>
@@ -52,7 +51,6 @@
                     </label>  
 
                     <br>
-
                     <input type="checkbox" v-model="taskPriorities" value="1">
                     <label>Urgent</label>
                     <br>
@@ -88,39 +86,38 @@
             this.get()
         },
         data() {
-        return {
-            fields: [
-                {
-                    key: 'name',
-                    sortable: true
-                },
-                {
-                    key:'completed_at',
-                    label:'Completed',
-                    sortable:true
-                },
-                {
-                    key:'priorities',
-                    label:'Priorities',
-                    sortable:true
-                },
-                {
-                    key: 'updated_at',
-                    label: 'Last Updated',
-                    sortable: true,
-                }
-            ],
-            tasks:[],
-            editMode:false,
-            modalid:0,
-            modalTitle:"Unknown Name",
-            modalPriorities:"yeet",
-            modalDate:"NOW",
-            completeChecked:false,
-            taskPriorities:[],
-            index:0,
+            return {
+                fields: [
+                    {
+                        key: 'name',
+                        sortable: true
+                    },
+                    {
+                        key:'completed_at',
+                        label:'Completed',
+                        sortable:true
+                    },
+                    {
+                        key:'priorities',
+                        label:'Priorities',
+                        sortable:true
+                    },
+                    {
+                        key: 'updated_at',
+                        label: 'Last Updated',
+                        sortable: true,
+                    }
+                ],
+                tasks: [],
+                editMode: false,
+                modalid: 0,
+                modalTitle: "Unknown Name",
+                modalPriorities: "unknown",
+                modalDate: "now?",
+                completeChecked: false,
+                taskPriorities: [],
 
-        }
+            }
         },
         methods: {
             get(){
@@ -152,18 +149,15 @@
                     return 'table-success'
                 }
             },
-
             edit(){
-                this.editMode=true;
+                this.editMode = true;
 
                 console.log(this.updateTasks);
             },
-
             update(){
                 this.editMode=false;
                 axios.put('/task', { _method: 'PUT', tasks: this.tasks });
             },
-
             deleteTask(id){
                 axios.delete('/task/' + id).then( 
                     this.index = this.tasks.map(function(x) {return x.id; }).indexOf(this.id),
@@ -172,14 +166,12 @@
                 this.editMode=false;
             },
             infoModal(id){
-                this.modalid=id;
-                let currentTask=this.tasks.find(x => x.id === id );
+                this.modalid = id;
+                let currentTask = this.tasks.find(x => x.id === id );
                 this.modalTitle = currentTask.name;
                 this.modalPriorities = currentTask.priorities.map( priority => priority.name);
                 this.modalDate = currentTask.completed_at;
-
-                this.taskPriorities=[];
-
+                this.taskPriorities = [];
 
                 if(this.modalPriorities.includes('urgent')){
                     this.taskPriorities.push("1"); 
@@ -194,7 +186,6 @@
                     this.taskPriorities.push("4"); 
                 }
 
-
                 if(this.modalDate != null){
                     this.completeChecked = true;
                 } else {
@@ -203,18 +194,16 @@
 
                 $('#infoModal').modal('toggle');
             },
-
             completedChecker(){
-                if(this.completeChecked===true){
+                if(this.completeChecked === true){
                     return "Completed";
                 } else {
                     return "Not Completed Yet";
                 }
             },
-
             updateInfo(){
                 axios.put('/taskpriorities', {
-                    _method : 'PUT', 
+                    _method: 'PUT', 
                     id: this.modalid, 
                     complete: this.completeChecked,
                     priorities: this.taskPriorities,
