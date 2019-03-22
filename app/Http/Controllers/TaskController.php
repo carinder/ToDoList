@@ -97,7 +97,7 @@ class TaskController extends Controller
     {
         $task = Task::find(request('id'));
         $task->priorities()->sync(request('priorities'));
-        if(request('complete')){
+        if (request('complete')) {
             $task->completed_at = now();
         } else {
             $task->completed_at = null;

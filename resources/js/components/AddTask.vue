@@ -1,6 +1,6 @@
 <template>
     <div>
-        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addModal">
+        <button type="button" class="btn add" data-toggle="modal" data-target="#addModal">
             +
         </button>
 

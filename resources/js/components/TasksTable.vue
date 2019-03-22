@@ -1,15 +1,14 @@
 <template>
     <div>
     <!-- edit -->
-        <button @click="edit()" v-if="!editMode" class="btn btn-primary">
-            Edit
+        <button @click="edit()" v-if="!editMode" class="btn btn-success edit">
+            <img src="https://img.icons8.com/ios-glyphs/26/000000/pencil.png">
         </button>
-        <button @click="update()" v-else class="btn btn-warning">
-            Save
+        <button @click="update()" v-else class="btn btn-warning edit">
+            <img src="https://img.icons8.com/windows/32/000000/save-as.png">
         </button>
-
     <!-- Table -->
-        <b-table striped hover :items="tasks" :fields="fields" :tbody-tr-class="rowClass">
+        <b-table striped hover :items="tasks" :fields="fields" :tbody-tr-class="rowClass" class="b-table">
             <template slot="name" slot-scope="{ item }">
                 <span v-if="!editMode">
                     {{ item.name }}
@@ -48,8 +47,7 @@
                     <input type="checkbox" id="checkbox" v-model="completeChecked">
                     <label for="checkbox">
                         {{ completedChecker() }}
-                    </label>  
-
+                    </label>
                     <br>
                     <input type="checkbox" v-model="taskPriorities" value="1">
                     <label>Urgent</label>
@@ -124,7 +122,7 @@
                 axios.get('/task').then(response => this.tasks = response.data);
             },
             priorities: function (item) {
-                return _.join(_.map(item.priorities, 'name'), ', ')
+                return _.join(_.map(item.priorities, 'name'), ', ');
             },
             priorityClass: function (priority) {
                 if (priority.name === 'urgent') {
@@ -169,21 +167,21 @@
                 this.modalid = id;
                 let currentTask = this.tasks.find(x => x.id === id );
                 this.modalTitle = currentTask.name;
-                this.modalPriorities = currentTask.priorities.map( priority => priority.name);
+                this.modalPriorities = currentTask.priorities.map(priority => priority.name);
                 this.modalDate = currentTask.completed_at;
                 this.taskPriorities = [];
 
                 if(this.modalPriorities.includes('urgent')){
-                    this.taskPriorities.push("1"); 
+                    this.taskPriorities.push("1");
                 }
                 if(this.modalPriorities.includes('important')){
-                    this.taskPriorities.push("2"); 
+                    this.taskPriorities.push("2");
                 }
                 if(this.modalPriorities.includes('ignored')){
-                    this.taskPriorities.push("3"); 
+                    this.taskPriorities.push("3");
                 }
                 if(this.modalPriorities.includes('optional')){
-                    this.taskPriorities.push("4"); 
+                    this.taskPriorities.push("4");
                 }
 
                 if(this.modalDate != null){

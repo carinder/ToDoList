@@ -1912,8 +1912,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   created: function created() {
@@ -57374,7 +57372,7 @@ var render = function() {
     _c(
       "button",
       {
-        staticClass: "btn btn-success",
+        staticClass: "btn add",
         attrs: {
           type: "button",
           "data-toggle": "modal",
@@ -57697,29 +57695,42 @@ var render = function() {
         ? _c(
             "button",
             {
-              staticClass: "btn btn-primary",
+              staticClass: "btn btn-success edit",
               on: {
                 click: function($event) {
                   return _vm.edit()
                 }
               }
             },
-            [_vm._v("\n        Edit\n    ")]
+            [
+              _c("img", {
+                attrs: {
+                  src: "https://img.icons8.com/ios-glyphs/26/000000/pencil.png"
+                }
+              })
+            ]
           )
         : _c(
             "button",
             {
-              staticClass: "btn btn-warning",
+              staticClass: "btn btn-warning edit",
               on: {
                 click: function($event) {
                   return _vm.update()
                 }
               }
             },
-            [_vm._v("\n        Save\n    ")]
+            [
+              _c("img", {
+                attrs: {
+                  src: "https://img.icons8.com/windows/32/000000/save-as.png"
+                }
+              })
+            ]
           ),
       _vm._v(" "),
       _c("b-table", {
+        staticClass: "b-table",
         attrs: {
           striped: "",
           hover: "",

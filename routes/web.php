@@ -15,8 +15,8 @@ Route::get('/', function () {
     return view('tasks/index');
 });
 
-Route::resource('/task','TaskController');
+Route::resource('task','TaskController');
 
-Route::put('/task', 'TaskController@update');
+Route::put('task', 'TaskController@update');
 
-Route::put('/taskpriorities', 'TaskController@updatePriorities');
+Route::put('taskpriorities', 'TaskController@updatePriorities');

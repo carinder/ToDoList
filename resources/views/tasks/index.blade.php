@@ -10,7 +10,9 @@
 </head>
     <body>
         <div id='app'>
-            <h1>To Do List:</h1>
+            <div class="header">
+                <h1>To Do List:</h1>
+            </div>
             <tasks-table></tasks-table>
             <add-task></add-task>
         </div>
