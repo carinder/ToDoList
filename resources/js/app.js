@@ -9,6 +9,8 @@ require('./bootstrap');
 
 import BootstrapVue from "bootstrap-vue";
 
+var moment = require('moment');
+
 window.Vue = require('vue');
 
 /**

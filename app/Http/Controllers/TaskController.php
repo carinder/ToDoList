@@ -78,25 +78,20 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
-        if ($request->has('tasks')) {
-            foreach ($request->tasks as $task) {
-                Task::updateOrCreate([
-                    'id' => $task['id']
-                ],[
-                    'name' => $task['name']
-                ],[
-                    'updated_at' => now()
-                ],[
-                    'completed_at' => now()
-                ]);
-            }
+        $task = Task::find(request('id'));
+        if (request('completed') == true){
+            $task->completed_at = null;
+        } else {
+            $task->completed_at = now();
         }
+        $task->save();
     }
 
     public function updatePriorities(Request $request)
     {
         $task = Task::find(request('id'));
         $task->priorities()->sync(request('priorities'));
+        $task->name = request('name');
         if (request('complete')) {
             $task->completed_at = now();
         } else {
