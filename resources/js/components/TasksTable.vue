@@ -179,12 +179,6 @@ export default {
         this.taskPriorities.push("4");
       }
 
-      if (this.modalDate != null) {
-        this.completeChecked = true;
-      } else {
-        this.completeChecked = false;
-      }
-
       $("#infoModal").modal("toggle");
     },
     updateInfo() {
@@ -192,7 +186,6 @@ export default {
         .put("/taskpriorities", {
           _method: "PUT",
           id: this.modalid,
-          complete: this.completeChecked,
           priorities: this.taskPriorities,
           name: this.modalTitle,
         })
