@@ -57370,12 +57370,8 @@ var render = function() {
     _c(
       "button",
       {
-        staticClass: "btn add",
-        attrs: {
-          type: "button",
-          "data-toggle": "modal",
-          "data-target": "#addModal"
-        }
+        staticClass: "btn btn-light",
+        attrs: { "data-toggle": "modal", "data-target": "#addModal" }
       },
       [_vm._v("+")]
     ),
@@ -57693,7 +57689,7 @@ var render = function() {
       _c("b-table", {
         staticClass: "b-table",
         attrs: {
-          striped: "",
+          bordered: "",
           hover: "",
           items: _vm.tasks,
           fields: _vm.fields,

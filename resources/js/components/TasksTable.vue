@@ -2,7 +2,7 @@
   <div>
     <!-- Table -->
     <b-table
-      striped
+      bordered
       hover
       :items="tasks"
       :fields="fields"

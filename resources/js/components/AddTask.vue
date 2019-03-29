@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button type="button" class="btn add" data-toggle="modal" data-target="#addModal">+</button>
+    <button class="btn btn-light" data-toggle="modal" data-target="#addModal">+</button>
 
     <div
       class="modal fade"

@@ -11,7 +11,7 @@
 </head>
     <body>
         <div id='app'>
-            <nav class="navbar navbar-light bg-dark">
+            <nav class="navbar navbar-dark bg-dark">
                 <span class="navbar-brand mb-0 h1">To Do:</span>
                 <add-task></add-task>
             </nav>
